@@ -12,6 +12,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.2.4
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/klauspost/compress v1.11.3 // indirect
+	github.com/prometheus/client_golang v1.8.0
 	github.com/prometheus/common v0.15.0 // indirect
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.7.1

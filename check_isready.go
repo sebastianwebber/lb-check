@@ -9,14 +9,17 @@ import (
 	"github.com/spf13/viper"
 )
 
-func checkIsReady() error {
+func checkIsReady(keyMetric string) error {
+
 	cmd := exec.Command(viper.GetString("pg-isready-bin"), buildArgs()...)
 	log.Printf("CMD: %#v ARGS: %#v\n", cmd.Path, cmd.Args)
+
 	err := cmd.Run()
 	if err != nil {
-		return fmt.Errorf("could not run cmd: %w", err)
+		return monitorError(keyMetric, fmt.Errorf("could not run cmd: %w", err))
 	}
-	return nil
+
+	return monitorError(keyMetric, nil)
 }
 
 func buildArgs() []string {

@@ -8,7 +8,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-func checkDelaySeconds() error {
+func checkDelaySeconds(keyMetric string) error {
+
 	var out struct {
 		Delay int
 	}
@@ -16,7 +17,7 @@ func checkDelaySeconds() error {
 	_, err := db.QueryOne(&out, viper.GetString("query-delay-seconds"))
 
 	if err != nil {
-		return fmt.Errorf("could not compute delay bytes: %w", err)
+		return monitorError(keyMetric, fmt.Errorf("could not compute delay bytes: %w", err))
 	}
 
 	delay := time.Duration(out.Delay) * time.Second
@@ -24,8 +25,8 @@ func checkDelaySeconds() error {
 	log.Printf("Replica delay: %v", delay)
 
 	if delay > viper.GetDuration("max-delay") {
-		return fmt.Errorf("replica max delay achieved: %v behind the primary database", delay)
+		return monitorError(keyMetric, fmt.Errorf("replica max delay achieved: %v behind the primary database", delay))
 	}
 
-	return nil
+	return monitorError(keyMetric, nil)
 }

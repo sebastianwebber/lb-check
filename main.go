@@ -10,13 +10,13 @@ import (
 
 type checkItem struct {
 	HelpMsg   string
-	CheckFunc func() error
+	CheckFunc func(string) error
 }
 
 var checkList = map[string]checkItem{
-	"pg_isready":          {HelpMsg: "postgres is running?", CheckFunc: checkIsReady},
-	"query_delay_seconds": {HelpMsg: "Replica delay seconds", CheckFunc: checkDelaySeconds},
-	"is_recovering":       {HelpMsg: "Replica is in recovery?", CheckFunc: checkRecovery},
+	"pg_isready":          {HelpMsg: "Checks if postgres is running", CheckFunc: checkIsReady},
+	"query-delay-seconds": {HelpMsg: "Checks the replica delay in seconds", CheckFunc: checkDelaySeconds},
+	"is_recovering":       {HelpMsg: "Checks if the replica is in recovery", CheckFunc: checkRecovery},
 }
 
 func init() {
@@ -39,7 +39,7 @@ func main() {
 		checks := map[string]string{}
 
 		for checkName, opts := range checkList {
-			err := opts.CheckFunc()
+			err := opts.CheckFunc(checkName)
 
 			if err != nil {
 				c.Status(500)
