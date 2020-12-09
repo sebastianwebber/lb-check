@@ -10,7 +10,7 @@ import (
 
 func checkDelaySeconds() error {
 	var out struct {
-		Delay time.Duration
+		Delay int
 	}
 
 	_, err := db.QueryOne(&out, viper.GetString("query-delay-seconds"))
@@ -19,7 +19,13 @@ func checkDelaySeconds() error {
 		return fmt.Errorf("could not compute delay bytes: %w", err)
 	}
 
-	log.Printf("Log bytes: %v", out.Delay)
+	delay := time.Duration(out.Delay) * time.Second
+
+	log.Printf("Replica delay: %v", delay)
+
+	if delay > viper.GetDuration("max-delay") {
+		return fmt.Errorf("replica max delay achieved: %v behind the primary database", delay)
+	}
 
 	return nil
 }

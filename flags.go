@@ -6,6 +6,7 @@ import (
 	"os/user"
 	"strings"
 	"syscall"
+	"time"
 
 	flag "github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -51,6 +52,8 @@ func init() {
 
 	flag.String("query-delay-seconds", "SELECT CASE WHEN pg_last_wal_receive_lsn() = pg_last_wal_replay_lsn() THEN 0 ELSE  EXTRACT(EPOCH FROM (now() - pg_last_xact_replay_timestamp()))::INTEGER END AS delay;", "query to check the replica delay in bytes")
 	flag.String("query-recovery", "SELECT pg_is_in_recovery() as recovery;", "query to check if the replica is in recovery mode")
+
+	flag.Duration("max-delay", 60*time.Second, "max delay allowed to a replica")
 
 	flag.Parse()
 
