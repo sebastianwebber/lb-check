@@ -49,8 +49,7 @@ func init() {
 	flag.IntP("port", "p", 5432, "database server port")
 	flag.BoolP("password", "W", false, "force password prompt")
 
-	flag.String("query-delay-bytes", "SELECT pg_wal_lsn_diff(pg_current_wal_lsn(),  pg_last_wal_replay_lsn()) as delay;", "query to check the replica delay in bytes")
-	flag.String("query-delay-duration", "SELECT CASE WHEN pg_last_wal_receive_lsn() = pg_last_wal_replay_lsn() THEN '0s' ELSE now() - pg_last_xact_replay_timestamp() END AS delay;", "query to check the replica delay in bytes")
+	flag.String("query-delay-seconds", "SELECT CASE WHEN pg_last_wal_receive_lsn() = pg_last_wal_replay_lsn() THEN 0 ELSE  EXTRACT(EPOCH FROM (now() - pg_last_xact_replay_timestamp()))::INTEGER END AS delay;", "query to check the replica delay in bytes")
 	flag.String("query-recovery", "SELECT pg_is_in_recovery() as recovery;", "query to check if the replica is in recovery mode")
 
 	flag.Parse()

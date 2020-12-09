@@ -14,10 +14,9 @@ type checkItem struct {
 }
 
 var checkList = map[string]checkItem{
-	"pg_isready": {HelpMsg: "postgres is running?", CheckFunc: checkIsReady},
-	// "replica_delay_bytes":    {HelpMsg: "Replica delay in bytes", CheckFunc: checkDelayBytes},
-	"replica_delay_duration": {HelpMsg: "Replica delay interval", CheckFunc: checkDelayDuration},
-	"is_recovering":          {HelpMsg: "Replica is in recovery?", CheckFunc: checkRecovery},
+	"pg_isready":          {HelpMsg: "postgres is running?", CheckFunc: checkIsReady},
+	"query_delay_seconds": {HelpMsg: "Replica delay seconds", CheckFunc: checkDelaySeconds},
+	"is_recovering":       {HelpMsg: "Replica is in recovery?", CheckFunc: checkRecovery},
 }
 
 func init() {
@@ -51,12 +50,12 @@ func main() {
 				})
 			}
 
-			checks[checkName] = opts.HelpMsg
+			checks[checkName] = "OK"
 		}
 
 		c.Status(200)
 		return c.JSON(map[string]interface{}{
-			"OK":          "all good.",
+			"OK":          "all checks ran without error",
 			"Validations": checks,
 		})
 	})

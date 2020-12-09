@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/go-pg/pg"
 	"github.com/spf13/viper"
 )
@@ -19,7 +18,6 @@ func buildConn() *pg.Options {
 		PoolSize:        1,
 		ApplicationName: appName,
 	}
-	defer spew.Dump(connOpts)
 
 	if dbPassword != "" {
 		connOpts.Password = dbPassword
