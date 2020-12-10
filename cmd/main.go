@@ -6,6 +6,7 @@ import (
 	"github.com/ansrivas/fiberprometheus/v2"
 	"github.com/go-pg/pg"
 	"github.com/gofiber/fiber/v2"
+	"github.com/spf13/viper"
 )
 
 type checkItem struct {
@@ -19,7 +20,33 @@ var checkList = map[string]checkItem{
 	"is_recovering":       {HelpMsg: "Checks if the replica is in recovery", CheckFunc: checkRecovery},
 }
 
+func contains(s []string, str string) bool {
+	for _, v := range s {
+		if v == str {
+			return true
+		}
+	}
+
+	return false
+}
+
 func init() {
+
+	onlyItems := viper.GetStringSlice("check-only")
+
+	if len(onlyItems) > 0 {
+		log.Printf("Checking only this checks: %v", onlyItems)
+
+		for k := range checkList {
+
+			if contains(onlyItems, k) {
+				continue
+			}
+
+			delete(checkList, k)
+		}
+	}
+
 	registerProm()
 }
 

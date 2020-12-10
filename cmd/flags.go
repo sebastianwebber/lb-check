@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"log"
 	"os"
 	"os/user"
+	"sort"
 	"strings"
 	"syscall"
 	"time"
@@ -55,10 +58,29 @@ func init() {
 
 	flag.Duration("max-delay", 60*time.Second, "max delay allowed to a replica")
 
+	var checkOnlyHelp bytes.Buffer
+
+	checkOnlyHelp.WriteString("executes only the defined checks.")
+
+	allChecks := []string{}
+
+	for k := range checkList {
+		allChecks = append(allChecks, k)
+	}
+
+	sort.Strings(allChecks)
+	checkOnlyHelp.WriteString(fmt.Sprintf(" Checks avaliable:\n - %s\n", strings.Join(allChecks, "\n - ")))
+
+	checkOnlyHelp.WriteString("By default all checks are enabled.\n")
+
+	// "execute only defined checks -- by default all checks are enabled"
+
+	flag.StringSlice("check-only", []string{}, checkOnlyHelp.String())
+
 	flag.Parse()
 
 	viper.BindPFlags(flag.CommandLine)
-	viper.SetEnvPrefix("lb_check")
+	viper.SetEnvPrefix(toPromLayout(appName))
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
 
@@ -73,5 +95,5 @@ func init() {
 		dbPassword = fmt.Sprintf("%s", out)
 	}
 
-	fmt.Printf("Starting %s %s (%s)\n", appName, Version, Commit)
+	log.Printf("Starting %s %s (%s)\n", appName, Version, Commit)
 }

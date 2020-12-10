@@ -14,14 +14,9 @@ func registerProm() {
 	for checkName, opts := range checkList {
 		metrics[checkName] = promauto.NewGauge(
 			prometheus.GaugeOpts{
-				Name: strings.ReplaceAll(
-					fmt.Sprintf(
-						"%s_%s_failing",
-						appName,
-						checkName,
-					),
-					"-",
-					"_",
+				Name: toPromLayout("%s_%s_failing",
+					appName,
+					checkName,
 				),
 				Help: opts.HelpMsg,
 			})
@@ -37,4 +32,8 @@ func monitorError(keyMetric string, err error) error {
 
 	metrics[keyMetric].Set(0)
 	return nil
+}
+
+func toPromLayout(format string, a ...interface{}) string {
+	return strings.ReplaceAll(fmt.Sprintf(format, a...), "-", "_")
 }
